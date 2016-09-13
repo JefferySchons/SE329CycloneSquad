@@ -4,7 +4,7 @@ import csv
 class CSVIndex:
     def __init__(self):
         self.loaded = 0;
-        read();
+        self.read();
     # end def __init__(self)
 
     def read(self):
@@ -24,7 +24,7 @@ class CSVIndex:
             writer.writeheader()
             for row in self.index:
                 writer.writerow(row)
-
+    # end def write(self)
 
     def getIDFromName(self, name):
         if self.loaded == 0:
@@ -33,10 +33,23 @@ class CSVIndex:
             if row['name'] == name:
                 return row['id'];
         return -1;
+    # end def getIDFromName(self, name)
+
+    def getNameFromID(self, id):
+        if self.loaded == 0:
+            read();
+        if id > len(self.index):
+            return "Not Found.";
+        if id < 0:
+            return "Not Found.";
+        return index[id]['name'];
+    # end def getNameFromID(self, id)
 
     def addName(self, name):
         pos = len(self.index) + 1
         self.index.append({'id': pos, 'name': name});
         return pos;
+    # end def addName(self, name)
+
 
 # myIndex = CSVIndex()
