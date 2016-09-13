@@ -35,6 +35,7 @@ def Recognize(event):
             tkMessageBox.showinfo("Success", "{} is correctly recognized with confidence {}.".format(name_actual, conf))
         else:
             tkMessageBox.showinfo("Failure", "Subject with label {} was not found.".format(label_predicted))
+            dBox = DialogBox(root, "Subject not recognized, please enter their name:", "Submit")
 
 #Get the images to train the recognizer
 def get_images_and_labels(path):
@@ -64,8 +65,26 @@ def get_images_and_labels(path):
     # return the images list and labels list
     return images, labels
 
-def Save(event):
-    print "TODO"
+class DialogBox:
+
+   def __init__(self, parent, labelText, submitText):
+       top = self.top = Toplevel(parent)
+       self.myLabel = Label(top, text=labelText)
+       self.myLabel.pack()
+       self.myEntryBox = Entry(top)
+       self.myEntryBox.pack()
+       self.mySubmitButton = Button(top, text=submitText, command=self.send)
+       self.mySubmitButton.pack()
+
+   def send(self):
+       global dialogReturn
+       dialogReturn = self.myEntryBox.get()
+       self.top.destroy()
+
+def saveButtonPressed():
+   inputDialog = DialogBox(root, "Enter Name", "Submit")
+   root.wait_window(inputDialog.top)
+   tkMessageBox.showinfo("Value", dialogReturn)
 
 root = Tk()
 input = Entry()
@@ -76,7 +95,7 @@ label = Label(text="Name")
 image = Label()
 text = Text()
 button2 = Button(text="Save")
-button2.bind('<Button-1>', Save)
+button2.bind('<Button-1>', saveButtonPressed)
 
 input.pack()
 button1.pack()
