@@ -28,7 +28,7 @@ class CSVIndex:
 
     def getIDFromName(self, name):
         if self.loaded == 0:
-            read();
+            self.read();
         for row in self.index:
             if row['name'] == name:
                 return row['id'];
@@ -37,7 +37,7 @@ class CSVIndex:
 
     def getNameFromID(self, id):
         if self.loaded == 0:
-            read();
+            self.read();
         if id > len(self.index):
             return "Not Found.";
         if id < 0:
