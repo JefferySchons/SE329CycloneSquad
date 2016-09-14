@@ -13,6 +13,9 @@ faceCascade = cv2.CascadeClassifier(cascadePath)
 # For face recognition we will the the LBPH Face Recognizer
 recognizer = cv2.createLBPHFaceRecognizer()
 myIndex = CSVIndex()
+path = './yalefaces'
+new_image = 'for use later'
+image_path = 'for use later'
 
 class FaceRecApp(Tk):
     def __init__(self):
@@ -35,7 +38,13 @@ class FaceRecApp(Tk):
         self.button2.pack()
 
         #self.nameEntered = text.get('0.0', END)
+    def countLabelImages(self, label):
+        imgCount = 0
+        for row in myIndex.index:
+            if row['id'] == label:
+                imgCount += 1
 
+        return imgCount
 
     #Get the images to train the recognizer
     def get_images_and_labels(path):
@@ -65,7 +74,7 @@ class FaceRecApp(Tk):
         # return the images list and labels list
         return images, labels
 
-    path = './yalefaces'
+
     # Call the get_images_and_labels function and get the face images and the
     # corresponding labels
 
@@ -83,18 +92,21 @@ class FaceRecApp(Tk):
         #image_path = txtBox.text
         image_name = self.input.get() #text.get('0.0', END)
         #image_file = tkFileDialog.askopenfilename(initialdir='C:/')
+        global image_path
         image_path = "./new faces/" + image_name
-        tkMessageBox.showinfo("image_path", image_path)
+        #tkMessageBox.showinfo("image_path", image_path)
         #image_path = os.path.split(image_file)[0]
+        global new_image
         new_image = PIL.Image.open(image_path).convert('L')
+        #new_image = cv2.imread(image_path, 0)
         predict_image = np.array(new_image, 'uint8')
         faces = faceCascade.detectMultiScale(predict_image)
-        print "CP 1"
+        #print "CP 1"
         for (x, y, w, h) in faces:
             label_predicted, conf = recognizer.predict(predict_image[y: y + h, x: x + w])
+            name_actual = myIndex.getNameFromID(label_predicted)
             #label_actual = int(os.path.split(image_path)[1].split(".")[0])
-            if conf < 100:
-                name_actual = myIndex.getNameFromID(label_predicted)
+            if conf < 100 and name_actual != "None":
                 tkMessageBox.showinfo("Success", "{} is correctly recognized with confidence {}.".format(name_actual, conf))
             else:
                 tkMessageBox.showinfo("Failure", "Subject was not recognized with enough confidence.  Please save the image with the correct name.")
@@ -107,16 +119,13 @@ class FaceRecApp(Tk):
        curLabel = myIndex.getIDFromName(givenName)
        if curLabel == -1:
             curLabel = myIndex.addName(givenName)
-       imageNumber = countLabelImages(curLabel)
-       cv2.imwrite(path + "/" + curLabel + "." + imageNumber)
+       imageNumber = self.countLabelImages(curLabel)
+       image_array = np.array(new_image)
+       image_to_save = PIL.Image.open(image_path)
+       image_to_save.save(path + "/" + curLabel + "." + str(imageNumber), "bmp")
+       #cv2.imwrite(path + "/" + curLabel + "." + str(imageNumber), image_array)
 
-    def countLabelImages(self, label):
-        imgCount = 0
-        for row in myIndex.index:
-            if row['id'] == label:
-                imgCount += 1
 
-        return imgCount
 
 root = FaceRecApp()
 root.mainloop()

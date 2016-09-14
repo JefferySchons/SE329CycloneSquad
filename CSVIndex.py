@@ -42,7 +42,9 @@ class CSVIndex:
             return "Not Found.";
         if id < 0:
             return "Not Found.";
-        return self.index[id]['name'];
+        for row in self.index:
+            if row['id'] == id:
+                return row['name'];
     # end def getNameFromID(self, id)
 
     def addName(self, name):
